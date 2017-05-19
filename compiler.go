@@ -3,15 +3,29 @@ package codd
 import "fmt"
 import "strings"
 
+// Node is the base type impleented by all AST types that can be compiled.
+type Node interface {
+	Kind() string
+	SQL(builder Compiler)
+}
+
+// Compiler is the interface used by nodes to push text and/or child nodes.
 type Compiler interface {
 	Push(node Node)
 	PushText(text string)
-	Quote(name Name) string
 	Param(value interface{}) (placeholder string)
-	String() string
-	ParamValues() []interface{}
 	Context() []Node
 	ContextMatches(pattern string) bool
+}
+
+type SQLCompiler interface {
+	Compiler
+	String() string
+	ParamValues() []interface{}
+}
+
+var DefaultSQLCompiler func() SQLCompiler = func() SQLCompiler {
+	return &BaseCompiler{}
 }
 
 type BaseCompiler struct {
@@ -45,8 +59,8 @@ func (b *BaseCompiler) PushText(text string) {
 	b.chunks = append(b.chunks, text)
 }
 
-// this is incorrect in case of names containing double quotes
-func (b *BaseCompiler) Quote(name Name) string {
+// FIXME: this is incorrect in case of names containing double quotes
+func (b *BaseCompiler) quote(name Name) string {
 	return fmt.Sprintf("%q", name)
 }
 

@@ -4,12 +4,8 @@ type selectStatement struct {
 	Relation
 }
 
-var DefaultCompiler func() Compiler = func() Compiler {
-	return &BaseCompiler{}
-}
-
 func Select(source Relation) (string, []interface{}) {
-	builder := DefaultCompiler()
+	builder := DefaultSQLCompiler()
 	builder.Push(selectStatement{source})
 	return builder.String(), builder.ParamValues()
 }

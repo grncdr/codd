@@ -15,8 +15,8 @@ type ReferencesColumns interface {
 }
 
 type Column interface {
-	Expression
 	Named
+	Expression
 	DBTable() Table
 	DBType() ColumnType
 	Of(t Table) Column
@@ -51,8 +51,8 @@ func (c ColumnConfig) SQL(compiler Compiler) {
 	compiler.Push(c.Name)
 }
 
-func (c ColumnConfig) As(ident Name) ColumnAlias {
-	return ColumnAlias{c.Self, ident}
+func (c ColumnConfig) As(ident Name) ExprAlias {
+	return ExprAlias{c.Self, ident}
 }
 
 func (c ColumnConfig) ReferencedColumns() []Column {
@@ -143,28 +143,3 @@ func (c BooleanColumn) Of(t Table) Column {
 }
 
 func (c BooleanColumn) IsBoolean() {}
-
-type ColumnAlias struct {
-	column Column
-	alias  Name
-}
-
-func (c ColumnAlias) ReferencedColumns() []Column {
-	return []Column{c.column}
-}
-
-func (c ColumnAlias) Kind() string {
-	return "ColumnAlias"
-}
-
-func (c ColumnAlias) DBName() Name {
-	return c.alias
-}
-
-func (c ColumnAlias) SQL(builder Compiler) {
-	if builder.ContextMatches("ColumnList") {
-		builder.Push(c.column)
-		builder.PushText(" AS ")
-	}
-	builder.Push(c.alias)
-}
