@@ -35,7 +35,7 @@ func (t TableConfig) ReferencedTables() []Table {
 	return []Table{t.Self}
 }
 
-func (t TableConfig) SQL(builder Compiler) {
+func (t TableConfig) Compile(builder Compiler) {
 	builder.Push(t.Name)
 }
 
@@ -113,7 +113,7 @@ func (t TableAlias) DBName() Name {
 	return t.alias
 }
 
-func (t TableAlias) SQL(builder Compiler) {
+func (t TableAlias) Compile(builder Compiler) {
 	if builder.ContextMatches("FromList") && !builder.ContextMatches("JoinCondition") {
 		builder.Push(t.Table)
 		builder.PushText(" AS ")

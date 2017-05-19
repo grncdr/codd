@@ -8,7 +8,7 @@ func (fl FromList) Kind() string {
 	return "FromList"
 }
 
-func (fl FromList) SQL(builder Compiler) {
+func (fl FromList) Compile(builder Compiler) {
 	builder.PushText(" FROM ")
 	builder.Push(fl.from)
 }

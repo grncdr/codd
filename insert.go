@@ -42,7 +42,7 @@ func (stmt insertStatement) Kind() string {
 	return "InsertStatement"
 }
 
-func (stmt insertStatement) SQL(builder Compiler) {
+func (stmt insertStatement) Compile(builder Compiler) {
 	builder.PushText("INSERT INTO ")
 	builder.Push(stmt.target)
 	builder.PushText("(")

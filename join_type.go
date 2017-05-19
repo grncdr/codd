@@ -6,7 +6,7 @@ func (j JoinType) Kind() string {
 	return "JoinType"
 }
 
-func (j JoinType) SQL(builder Compiler) {
+func (j JoinType) Compile(builder Compiler) {
 	builder.PushText(string(j))
 }
 

@@ -47,7 +47,7 @@ func (join Join) Ordering() Node {
 	return join.left.Ordering()
 }
 
-func (join Join) SQL(builder Compiler) {
+func (join Join) Compile(builder Compiler) {
 	builder.Push(join.left)
 	builder.Push(join.typ)
 	builder.Push(join.right)

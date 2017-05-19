@@ -21,7 +21,7 @@ func (o OrderBy) Kind() string {
 	return "OrderBy"
 }
 
-func (o OrderBy) SQL(compiler Compiler) {
+func (o OrderBy) Compile(compiler Compiler) {
 	compiler.Push(o.expr)
 	compiler.PushText(string(o.dir))
 	if secondary := o.rel.Ordering(); secondary != nil {

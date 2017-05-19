@@ -12,7 +12,7 @@ func (p Parameter) Kind() string {
 	return "Parameter"
 }
 
-func (p Parameter) SQL(compiler Compiler) {
+func (p Parameter) Compile(compiler Compiler) {
 	compiler.PushText(compiler.Param(p.value))
 }
 

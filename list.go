@@ -16,7 +16,7 @@ func (list List) Kind() string {
 	return list.kind
 }
 
-func (list List) SQL(builder Compiler) {
+func (list List) Compile(builder Compiler) {
 	for i, node := range list.nodes {
 		if i != 0 && list.glue != "" {
 			builder.PushText(list.glue)

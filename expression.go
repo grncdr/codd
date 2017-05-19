@@ -43,7 +43,7 @@ func (expr BinaryExpr) Kind() string {
 }
 
 // Shared implementation of compilation for all binary expressions
-func (expr BinaryExpr) SQL(compiler Compiler) {
+func (expr BinaryExpr) Compile(compiler Compiler) {
 	expr.pushOperand(compiler, expr.left)
 	compiler.PushText(expr.op)
 	expr.pushOperand(compiler, expr.right)
@@ -125,7 +125,7 @@ func (a ExprAlias) Kind() string {
 	return "ExprAlias"
 }
 
-func (a ExprAlias) SQL(compiler Compiler) {
+func (a ExprAlias) Compile(compiler Compiler) {
 	compiler.Push(a.expr)
 	compiler.PushText(" AS ")
 	compiler.Push(a.name)

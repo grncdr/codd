@@ -6,7 +6,7 @@ import "strings"
 // Node is the base type impleented by all AST types that can be compiled.
 type Node interface {
 	Kind() string
-	SQL(builder Compiler)
+	Compile(builder Compiler)
 }
 
 // Compiler is the interface used by nodes to push text and/or child nodes.
@@ -51,7 +51,7 @@ func (b *BaseCompiler) Context() []Node {
 func (b *BaseCompiler) Push(node Node) {
 	b.context = append(b.context, node)
 	// fmt.Printf("%s> %s %T\n", strings.Repeat("-", len(b.context)), node.Kind(), node)
-	node.SQL(b)
+	node.Compile(b)
 	b.context = b.context[0 : len(b.context)-1]
 }
 

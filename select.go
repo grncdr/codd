@@ -14,7 +14,7 @@ func (stmt selectStatement) Kind() string {
 	return "SelectStatement"
 }
 
-func (stmt selectStatement) SQL(builder Compiler) {
+func (stmt selectStatement) Compile(builder Compiler) {
 	builder.PushText("SELECT ")
 
 	for i, field := range stmt.Projection() {

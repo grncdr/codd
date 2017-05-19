@@ -14,6 +14,6 @@ func (name Name) Name() Name {
 	return name
 }
 
-func (name Name) SQL(builder Compiler) {
+func (name Name) Compile(builder Compiler) {
 	builder.PushText(string(name))
 }

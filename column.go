@@ -44,7 +44,7 @@ func (c ColumnConfig) DBTable() Table {
 	return c.Table
 }
 
-func (c ColumnConfig) SQL(compiler Compiler) {
+func (c ColumnConfig) Compile(compiler Compiler) {
 	// TODO use context here to decide when to print fully qualified
 	compiler.Push(c.Table)
 	compiler.PushText(".")
