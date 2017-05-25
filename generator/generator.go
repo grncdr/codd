@@ -3,6 +3,7 @@ package gen
 import (
 	"fmt"
 	"io"
+	"os/exec"
 	"strings"
 	"text/template"
 )
@@ -88,5 +89,24 @@ func Render(config Config) error {
 	if err != nil {
 		return err
 	}
-	return root.ExecuteTemplate(config.Writer, "package", config)
+	fmtCmd := exec.Command("gofmt")
+	fmtCmd.Stdout = config.Writer
+	fmtStdin, err := fmtCmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+	err = fmtCmd.Start()
+	if err != nil {
+		return err
+	}
+	err = root.ExecuteTemplate(fmtStdin, "package", config)
+	fmtStdin.Close()
+	if err != nil {
+		return err
+	}
+	fmtErr := fmtCmd.Wait()
+	if fmtErr != nil {
+		err = fmtErr
+	}
+	return err
 }

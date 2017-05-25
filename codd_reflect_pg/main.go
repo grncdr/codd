@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"path"
 	"regexp"
 
 	"github.com/grncdr/codd/generator"
@@ -12,16 +14,40 @@ import (
 )
 
 var connString string
+var packageName string
+var outFile string
 var searchPath string
 
-var intRegexp = regexp.MustCompile("^(big|small|tiny)?(int(eger|8|4|2)?|serial)$")
-var timeRegexp = regexp.MustCompile("^timestamp with(out)? time zone$")
-var jsonRegexp = regexp.MustCompile("^jsonb?")
-var tsvecRegexp = regexp.MustCompile("tsvector")
-
 func main() {
+	flag.StringVar(&packageName, "package", "",
+		"Name to use in the generated package declaration.")
+	flag.StringVar(&connString, "conn", "",
+		"Postgres connection string")
 	flag.Parse()
-	connString := flag.Arg(0)
+
+	outFile = path.Clean(flag.Arg(0))
+
+	if packageName == "" && outFile == "" {
+		fail(
+			errors.New("At least one of -out or -package must be provided"),
+			"Invalid arguments",
+		)
+	}
+
+	if packageName == "" {
+		if outFile[0] != '/' {
+			cwd, err := os.Getwd()
+			if err != nil {
+				fail(err, "Could not get working directory")
+			}
+			outFile = path.Join(cwd, outFile)
+		}
+
+		dir, _ := path.Split(path.Clean(outFile))
+		fail(os.MkdirAll(dir, 0700), "Could not make package directory")
+		packageName = gen.GetPackageName(dir)
+	}
+
 	db, err := sql.Open("postgres", connString)
 	fail(err, "Could not open database %q", connString)
 	fail(db.Ping(), "Could not ping database %q", connString)
@@ -50,7 +76,7 @@ func main() {
 	}
 
 	config := gen.Config{
-		PackageName: "mypackage",
+		PackageName: packageName,
 		Imports:     []string{"github.com/grncdr/pg"},
 		Tables:      tables,
 		Writer:      os.Stdout,
@@ -59,6 +85,20 @@ func main() {
 
 	fail(gen.Render(config), "Template rendering")
 }
+
+func fail(err error, msg string, params ...interface{}) {
+	if err == nil {
+		return
+	}
+	params = append(params, err)
+	fmt.Printf(msg+": %s\n", params...)
+	os.Exit(3)
+}
+
+var intRegexp = regexp.MustCompile("^(big|small|tiny)?(int(eger|8|4|2)?|serial)$")
+var timeRegexp = regexp.MustCompile("^timestamp with(out)? time zone$")
+var jsonRegexp = regexp.MustCompile("^jsonb?")
+var tsvecRegexp = regexp.MustCompile("tsvector")
 
 func columnType(dbType string) string {
 	switch {
@@ -80,13 +120,4 @@ func columnType(dbType string) string {
 	default:
 		return "codd.Column"
 	}
-}
-
-func fail(err error, msg string, params ...interface{}) {
-	if err == nil {
-		return
-	}
-	params = append(params, err)
-	fmt.Printf(msg+": %s\n", params...)
-	os.Exit(3)
 }
