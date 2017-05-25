@@ -1,20 +1,20 @@
 package codd
 
-type selectStatement struct {
+type SelectQuery struct {
 	Relation
 }
 
-func Select(source Relation) (string, []interface{}) {
-	builder := DefaultSQLCompiler()
-	builder.Push(selectStatement{source})
-	return builder.String(), builder.ParamValues()
+func Select(rel Relation) SelectQuery {
+	return SelectQuery{rel}
 }
 
-func (stmt selectStatement) Kind() string {
+func (stmt SelectQuery) Kind() string {
 	return "SelectStatement"
 }
 
-func (stmt selectStatement) Compile(builder Compiler) {
+func (stmt SelectQuery) IsQuery() {}
+
+func (stmt SelectQuery) Compile(builder Compiler) {
 	builder.PushText("SELECT ")
 
 	for i, field := range stmt.Projection() {

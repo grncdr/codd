@@ -14,6 +14,6 @@ func (name Name) Name() Name {
 	return name
 }
 
-func (name Name) Compile(builder Compiler) {
-	builder.PushText(string(name))
+func (name Name) Compile(compiler Compiler) {
+	compiler.PushText(compiler.Quote(name))
 }

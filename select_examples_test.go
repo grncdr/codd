@@ -1,22 +1,12 @@
 package codd
 
-import (
-	"fmt"
-	"testing"
-)
-
-func TestMain(m *testing.M) {
-	InitPersonTable()
-	m.Run()
-}
-
 func ExampleSelect() {
-	fmt.Println(Select(Person))
+	PrintQuery(Select(Person))
 	// Output: SELECT person.* FROM person []
 }
 
 func ExampleProject() {
-	fmt.Println(Select(Project(Person.ID, Person.Email)))
+	PrintQuery(Select(Project(Person.ID, Person.Email)))
 	// Output: SELECT person.id, person.email FROM person []
 }
 
@@ -30,6 +20,6 @@ func ExampleProject_referencingMultipleTables() {
 		BestFriendID,
 	)
 
-	fmt.Println(Select(p))
+	PrintQuery(Select(p))
 	// Output: SELECT person.id, best_friend.id FROM person, person AS best_friend []
 }

@@ -3,7 +3,7 @@ package codd
 import "fmt"
 import "strings"
 
-// Node is the base type impleented by all AST types that can be compiled.
+// Node is the base type implemented by all AST types that can be compiled.
 type Node interface {
 	Kind() string
 	Compile(builder Compiler)
@@ -13,6 +13,7 @@ type Node interface {
 type Compiler interface {
 	Push(node Node)
 	PushText(text string)
+	Quote(ident Name) string
 	Param(value interface{}) (placeholder string)
 	Context() []Node
 	ContextMatches(pattern string) bool
@@ -22,10 +23,6 @@ type SQLCompiler interface {
 	Compiler
 	String() string
 	ParamValues() []interface{}
-}
-
-var DefaultSQLCompiler func() SQLCompiler = func() SQLCompiler {
-	return &BaseCompiler{}
 }
 
 type BaseCompiler struct {
@@ -59,9 +56,9 @@ func (b *BaseCompiler) PushText(text string) {
 	b.chunks = append(b.chunks, text)
 }
 
-// FIXME: this is incorrect in case of names containing double quotes
-func (b *BaseCompiler) quote(name Name) string {
-	return fmt.Sprintf("%q", name)
+// Quote a name, the base compiler does not perform any quoting.
+func (b *BaseCompiler) Quote(name Name) string {
+	return string(name)
 }
 
 func (b *BaseCompiler) Param(value interface{}) string {
