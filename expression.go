@@ -7,13 +7,13 @@ type Expression interface {
 	Precedence() int
 }
 
-// Boolean is a marker interface indicating an operand has a boolean value.
+// Boolean is a marker interface indicating an expression has a boolean value.
 type Boolean interface {
 	Expression
 	IsBoolean()
 }
 
-// Numeric is a marker interface indicating an operand can be treated as a number.
+// Numeric is a marker interface indicating an expression can be treated as a number.
 type Numeric interface {
 	Expression
 	IsNumeric()
