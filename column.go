@@ -8,6 +8,7 @@ const (
 	ColumnTypeInteger
 	ColumnTypeBigInteger
 	ColumnTypeBoolean
+	ColumnTypeTime
 )
 
 type ReferencesColumns interface {
@@ -143,3 +144,19 @@ func (c BooleanColumn) Of(t Table) Column {
 }
 
 func (c BooleanColumn) IsBoolean() {}
+
+type TimeColumn struct {
+	ColumnConfig
+}
+
+func (c TimeColumn) DBType() ColumnType {
+	return ColumnTypeTime
+}
+
+func (c TimeColumn) Of(t Table) Column {
+	r := TimeColumn{}
+	r.Table = t
+	r.Name = c.DBName()
+	r.Self = &r
+	return r
+}
